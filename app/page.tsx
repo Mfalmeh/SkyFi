@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import Image from "next/image" // Import the Image component
 import { Button } from "@/components/ui/button"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
@@ -236,13 +237,13 @@ const HomePage = () => {
           </div>
         </motion.section>
 
-        {/* Gaming/VR Section with Image */}
+        {/* Gaming/VR Section (Image removed) */}
         <motion.section
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-16 bg-orange-50 dark:bg-gray-800"
+          className="py-16 bg-orange-50 dark:bg-gray-800 relative" // Added relative for absolute positioning of new image
         >
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -288,9 +289,20 @@ const HomePage = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <img src="/images/man-vr.png" alt="VR Experience" className="max-h-96 object-contain" />
+                {/* Removed image placeholder */}
               </motion.div>
             </div>
+          </div>
+          {/* New image at the bottom right of this section */}
+          <div className="absolute bottom-0 right-0 w-40 h-40 overflow-hidden">
+            <Image
+              src="/images/man-vr-bottom-left.png"
+              alt="Man in VR headset"
+              fill
+              style={{ objectFit: "contain", objectPosition: "bottom right" }} // Position at bottom right
+              sizes="100px" // Small size for optimization
+              priority
+            />
           </div>
         </motion.section>
 
@@ -380,7 +392,7 @@ const HomePage = () => {
           </div>
         </motion.section>
 
-        {/* Streaming Section with Image */}
+        {/* Streaming Section (Image removed) */}
         <motion.section
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -397,7 +409,7 @@ const HomePage = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <img src="/images/student-streaming.png" alt="Student Streaming" className="max-h-96 object-contain" />
+                {/* Removed image placeholder */}
               </motion.div>
 
               <motion.div
