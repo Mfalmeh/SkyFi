@@ -4,13 +4,148 @@ import { useRouter } from "next/navigation" // Replaced useNavigate from react-r
 import { Button } from "@/components/ui/button"
 import Header from "@/components/header" // Adjusted import path
 import Footer from "@/components/footer" // Adjusted import path
-import { Wifi, Shield, Clock, CreditCard, Check } from "lucide-react" // Added Check icon
+import { Wifi, Shield, Clock, CreditCard, Check, ChevronLeft, ChevronRight } from "lucide-react" // Added Check icon and carousel navigation icons
 import { useAuth } from "@/components/auth-provider" // Replaced fine.auth.useSession()
 import { motion } from "framer-motion" // Ensure motion is imported for animations
+import { useState, useRef, useEffect } from "react" // Import React hooks
+
+// Define packages data locally for the carousel
+const carouselPackages = [
+  {
+    id: "daily",
+    name: "Daily",
+    price: "1,500",
+    duration: "1 day",
+    description: "Perfect for short-term needs",
+    features: ["Unlimited data", "24 hours access"],
+    popular: false,
+  },
+  {
+    id: "weekly",
+    name: "Weekly",
+    price: "8,500",
+    duration: "7 days",
+    description: "Great value for regular users",
+    features: ["Unlimited data", "7 days access", "Save 20% vs daily"],
+    popular: true,
+  },
+  {
+    id: "monthly",
+    name: "Monthly",
+    price: "35,000",
+    duration: "30 days",
+    description: "Best value for long-term",
+    features: ["Unlimited data", "30 days access", "Save 30% vs daily"],
+    popular: false,
+  },
+  // Added more packages to demonstrate carousel functionality with more items
+  {
+    id: "quarterly",
+    name: "Quarterly",
+    price: "90,000",
+    duration: "90 days",
+    description: "Long-term savings",
+    features: ["Unlimited data", "90 days access", "Save 40% vs daily"],
+    popular: false,
+  },
+  {
+    id: "annual",
+    name: "Annual",
+    price: "300,000",
+    duration: "365 days",
+    description: "Ultimate savings",
+    features: ["Unlimited data", "365 days access", "Save 50% vs daily"],
+    popular: false,
+  },
+]
 
 const HomePage = () => {
   const router = useRouter()
-  const { user } = useAuth() // Get user from your existing AuthProvider
+  const { user } = useAuth()
+
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const [activeIndex, setActiveIndex] = useState(0) // Start with the first item active
+
+  const handleScroll = () => {
+    if (carouselRef.current) {
+      const scrollLeft = carouselRef.current.scrollLeft
+      const itemWidth = carouselRef.current.children[0]?.clientWidth || 0
+      // Calculate the index of the item that is most in view
+      // This assumes items have equal width and are snapped.
+      const newIndex = Math.round(scrollLeft / itemWidth)
+      setActiveIndex(newIndex)
+    }
+  }
+
+  useEffect(() => {
+    const carouselElement = carouselRef.current
+    if (carouselElement) {
+      carouselElement.addEventListener("scroll", handleScroll)
+      // Initial set of active index
+      handleScroll()
+      return () => {
+        carouselElement.removeEventListener("scroll", handleScroll)
+      }
+    }
+  }, [])
+
+  const scrollToItem = (index: number) => {
+    if (carouselRef.current) {
+      const itemWidth = carouselRef.current.children[0]?.clientWidth || 0
+      carouselRef.current.scrollTo({
+        left: index * itemWidth,
+        behavior: "smooth",
+      })
+      setActiveIndex(index)
+    }
+  }
+
+  const handlePrev = () => {
+    setActiveIndex((prevIndex) => {
+      const newIndex = Math.max(0, prevIndex - 1)
+      scrollToItem(newIndex)
+      return newIndex
+    })
+  }
+
+  const handleNext = () => {
+    setActiveIndex((prevIndex) => {
+      const newIndex = Math.min(carouselPackages.length - 1, prevIndex + 1)
+      scrollToItem(newIndex)
+      return newIndex
+    })
+  }
+
+  // Function to determine card style based on its position relative to activeIndex
+  const getCardStyle = (index: number) => {
+    const distance = Math.abs(index - activeIndex)
+    let opacity = 1
+    let scale = 1
+    let zIndex = 1 // Default z-index
+
+    if (distance === 1) {
+      opacity = 0.7
+      scale = 0.9
+      zIndex = 0 // Side items are behind
+    } else if (distance >= 2) {
+      opacity = 0.4
+      scale = 0.8
+      zIndex = -1 // Further items are even more behind
+    }
+
+    // For the active item, ensure it's always on top
+    if (index === activeIndex) {
+      zIndex = 2
+    }
+
+    return {
+      opacity,
+      transform: `scale(${scale})`,
+      zIndex,
+      transition: "all 0.3s ease-in-out",
+      filter: distance > 0 ? "grayscale(50%)" : "none", // Add grayscale for non-active
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -18,8 +153,6 @@ const HomePage = () => {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="bg-gradient-to-b from-orange-500 to-orange-500/80 text-white py-16 md:py-24">
-          {" "}
-          {/* Adjusted colors to match existing theme */}
           <div className="container mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Fast & Affordable WiFi for Students</h1>
             <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
@@ -63,29 +196,21 @@ const HomePage = () => {
             <h2 className="text-3xl font-bold text-center mb-12">Why Choose SkyFi?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
-                {" "}
-                {/* Added border and shadow-md */}
                 <Wifi className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Fast Connection</h3>
                 <p className="text-muted-foreground">Enjoy high-speed internet for streaming, gaming, and studying.</p>
               </div>
               <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
-                {" "}
-                {/* Added border and shadow-md */}
                 <Shield className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Secure Network</h3>
                 <p className="text-muted-foreground">Our network is protected with the latest security protocols.</p>
               </div>
               <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
-                {" "}
-                {/* Added border and shadow-md */}
                 <Clock className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">24/7 Access</h3>
                 <p className="text-muted-foreground">Connect anytime with our always-on WiFi service.</p>
               </div>
               <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
-                {" "}
-                {/* Added border and shadow-md */}
                 <CreditCard className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Flexible Packages</h3>
                 <p className="text-muted-foreground">
@@ -148,83 +273,89 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Pricing Preview */}
+        {/* Pricing Preview - Updated Carousel */}
         <section className="py-16 bg-muted/50">
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-4">Simple, Affordable Pricing</h2>
             <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
               Choose the package that works best for you with no hidden fees or contracts.
             </p>
-            {/* Carousel Container */}
-            <div className="flex overflow-x-auto snap-x snap-mandatory space-x-8 pb-4 max-w-5xl mx-auto scrollbar-hide">
-              <div className="flex-shrink-0 w-full md:w-1/3 snap-center">
-                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
-                  <h3 className="text-xl font-bold mb-2">Daily</h3>
-                  <p className="text-3xl font-bold mb-4">
-                    1,500 <span className="text-base font-normal text-muted-foreground">UGX</span>
-                  </p>
-                  <p className="text-muted-foreground mb-6">Perfect for short-term needs</p>
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      Unlimited data
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      24 hours access
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="flex-shrink-0 w-full md:w-1/3 snap-center">
-                <div className="bg-card p-6 rounded-lg shadow-sm border-2 border-orange-500 relative">
-                  <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                    POPULAR
+            <div className="relative flex items-center justify-center">
+              {/* Carousel Container */}
+              <div
+                ref={carouselRef}
+                className="flex overflow-x-scroll snap-x snap-mandatory space-x-8 pb-4 max-w-5xl mx-auto scrollbar-hide"
+                style={{ scrollPadding: "0 25%" }} // Adjust scroll padding to center items
+              >
+                {carouselPackages.map((pkg, index) => (
+                  <div
+                    key={pkg.id}
+                    className="flex-shrink-0 snap-center w-full md:w-1/3" // Keep responsive width
+                    style={getCardStyle(index)}
+                  >
+                    <div
+                      className={`bg-card p-6 rounded-lg shadow-sm border ${pkg.popular ? "border-2 border-orange-500" : "border-border"} relative`}
+                    >
+                      {pkg.popular && (
+                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                          POPULAR
+                        </div>
+                      )}
+                      <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
+                      <p className="text-3xl font-bold mb-4">
+                        {pkg.price} <span className="text-base font-normal text-muted-foreground">UGX</span>
+                      </p>
+                      <p className="text-muted-foreground mb-6">{pkg.description}</p>
+                      <ul className="space-y-2 mb-6">
+                        {pkg.features.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center">
+                            <Check className="w-4 h-4 mr-2 text-green-500" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">Weekly</h3>
-                  <p className="text-3xl font-bold mb-4">
-                    8,500 <span className="text-base font-normal text-muted-foreground">UGX</span>
-                  </p>
-                  <p className="text-muted-foreground mb-6">Great value for regular users</p>
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      Unlimited data
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />7 days access
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      Save 20% vs daily
-                    </li>
-                  </ul>
-                </div>
+                ))}
               </div>
-              <div className="flex-shrink-0 w-full md:w-1/3 snap-center">
-                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
-                  <h3 className="text-xl font-bold mb-2">Monthly</h3>
-                  <p className="text-3xl font-bold mb-4">
-                    35,000 <span className="text-base font-normal text-muted-foreground">UGX</span>
-                  </p>
-                  <p className="text-muted-foreground mb-6">Best value for long-term</p>
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      Unlimited data
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      30 days access
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-green-500" />
-                      Save 30% vs daily
-                    </li>
-                  </ul>
-                </div>
-              </div>
+
+              {/* Navigation Buttons */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full shadow-md z-10"
+                onClick={handlePrev}
+                disabled={activeIndex === 0}
+              >
+                <ChevronLeft className="h-6 w-6" />
+                <span className="sr-only">Previous</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full shadow-md z-10"
+                onClick={handleNext}
+                disabled={activeIndex === carouselPackages.length - 1}
+              >
+                <ChevronRight className="h-6 w-6" />
+                <span className="sr-only">Next</span>
+              </Button>
             </div>
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center mt-8 space-x-2">
+              {carouselPackages.map((_, index) => (
+                <button
+                  key={index}
+                  className={`h-2 w-2 rounded-full transition-colors ${
+                    index === activeIndex ? "bg-orange-500" : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                  onClick={() => scrollToItem(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+
             <div className="text-center mt-10">
               <Button
                 size="lg"
@@ -239,8 +370,6 @@ const HomePage = () => {
 
         {/* Streaming Section with Image */}
         <section className="py-16 bg-orange-50 dark:bg-gray-800">
-          {" "}
-          {/* Changed to match Gaming/VR section */}
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <motion.div
@@ -260,41 +389,29 @@ const HomePage = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <h2 className="text-3xl font-bold mb-4 text-orange-800 dark:text-orange-300">
-                  {" "}
-                  {/* Changed to orange */}
-                  Stream Without Limits
-                </h2>
+                <h2 className="text-3xl font-bold mb-4 text-orange-800 dark:text-orange-300">Stream Without Limits</h2>
                 <p className="text-lg mb-6 text-orange-700 dark:text-orange-400">
-                  {" "}
-                  {/* Changed to orange */}
                   Whether you're studying with music, watching lectures online, or catching up on your favorite shows,
                   SkyFi delivers reliable speed when you need it most.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <span className="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center text-white mr-3">
-                      {" "}
-                      {/* Changed to orange */}✓
+                      ✓
                     </span>
-                    <span className="text-orange-700 dark:text-orange-400">High-quality music streaming</span>{" "}
-                    {/* Changed to orange */}
+                    <span className="text-orange-700 dark:text-orange-400">High-quality music streaming</span>
                   </li>
                   <li className="flex items-center">
                     <span className="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center text-white mr-3">
-                      {" "}
-                      {/* Changed to orange */}✓
+                      ✓
                     </span>
-                    <span className="text-orange-700 dark:text-orange-400">Video calls without freezing</span>{" "}
-                    {/* Changed to orange */}
+                    <span className="text-orange-700 dark:text-orange-400">Video calls without freezing</span>
                   </li>
                   <li className="flex items-center">
                     <span className="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center text-white mr-3">
-                      {" "}
-                      {/* Changed to orange */}✓
+                      ✓
                     </span>
-                    <span className="text-orange-700 dark:text-orange-400">Download lecture materials quickly</span>{" "}
-                    {/* Changed to orange */}
+                    <span className="text-orange-700 dark:text-orange-400">Download lecture materials quickly</span>
                   </li>
                 </ul>
               </motion.div>
@@ -308,3 +425,4 @@ const HomePage = () => {
 }
 
 export default HomePage
+</merged_code>

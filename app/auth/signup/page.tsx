@@ -8,9 +8,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { LoadingButton } from "@/components/ui/loading-button"
+import LoadingButton from "@/components/loading-button" // Corrected import path
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Eye, EyeOff, SkyFiLogo, AlertCircle } from "@/components/icons"
+import { ArrowLeft, Eye, EyeOff, AlertCircle } from "lucide-react" // Corrected import path for icons
+import SkyFiLogo from "@/components/skyfi-logo" // Corrected import path for SkyFiLogo
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 const supabase = createClientComponentClient()
