@@ -1,48 +1,38 @@
-import { supabase } from "@/lib/supabase-client" // Import the client-side instance
-
-export interface UserProfile {
-  id: string
-  full_name: string | null
-  phone_number: string | null
-  created_at: string
-  updated_at: string
-}
-
-export interface Package {
-  id: number
-  name: string
-  price: number
-  duration_days: number
-  description: string | null
-  features: string[]
-  created_at: string
-}
+// Mock subscription service - replace with real API calls
+import { supabase } from "./supabase-client" // Import supabase client
+import type { UserProfile, Package } from "./types" // Import UserProfile and Package types
 
 export interface Subscription {
-  id: number
-  user_id: string
-  package_id: number
+  id: string
+  package: {
+    name: string
+    price: number
+    features: string[]
+  }
+  packageName: string
+  packageType: "daily" | "weekly" | "monthly"
+  price: number
   start_date: string
   end_date: string
   status: "active" | "expired" | "cancelled"
-  payment_method: string | null
-  payment_reference: string | null
-  created_at: string
-  package: Package
+  autoRenew: boolean
+  payment_method?: string
+  payment_reference?: string
 }
 
 export interface Payment {
-  id: number
-  user_id: string
-  subscription_id: number | null
+  id: string
   amount: number
   currency: string
-  payment_method: string | null
-  payment_reference: string | null
-  status: "completed" | "pending" | "failed"
   created_at: string
+  status: "completed" | "pending" | "failed"
+  method: "mobile_money" | "card"
+  description: string
+  reference: string
   subscription?: {
-    package: Package
+    package: {
+      name: string
+    }
   }
 }
 
@@ -296,6 +286,12 @@ class SupabaseService {
         .single()
 
       if (error) {
+        // Handle "no rows returned" specifically for updates by ID
+        if (error.code === "PGRST116") {
+          // [^1]
+          console.warn(`Payment with ID ${paymentId} not found for subscription update.`)
+          return null
+        }
         console.error("Error updating payment subscription:", error)
         return null
       }

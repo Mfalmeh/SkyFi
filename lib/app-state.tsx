@@ -224,57 +224,119 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     if (!user) return false
 
     try {
-      // Get package details
+      // Get package details from state
       const selectedPackage = state.user.packages.find((pkg) => pkg.id === packageId)
       if (!selectedPackage) {
         throw new Error("Package not found")
       }
 
-      // Create payment record
-      const paymentReference = `${paymentMethod.toUpperCase()}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      // 1. Initiate payment via our API route
+      const initiateResponse = await fetch("/api/momo/initiate-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: selectedPackage.price,
+          phoneNumber: phoneNumber,
+          packageId: selectedPackage.id,
+        }),
+      })
 
+      const initiateResult = await initiateResponse.json()
+
+      if (!initiateResponse.ok || !initiateResult.success) {
+        dispatch({ type: "SET_ERROR", payload: initiateResult.message || "Failed to initiate payment with MoMo." })
+        return false
+      }
+
+      const { referenceId } = initiateResult
+
+      // 2. Create a PENDING payment record in Supabase immediately
       const payment = await supabaseService.createPayment(
         user.id,
-        null, // Will be updated when subscription is created
+        null, // subscription_id will be updated later
         selectedPackage.price,
         paymentMethod,
-        paymentReference,
+        referenceId, // Use the MoMo referenceId
         "pending",
       )
 
       if (!payment) {
-        throw new Error("Failed to create payment record")
+        throw new Error("Failed to create pending payment record in database.")
       }
 
-      // Add payment to state immediately
-      addPayment(payment)
+      dispatch({ type: "ADD_PAYMENT", payload: payment }) // Add to state
 
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // 3. Poll for payment status (simplified for demo, real app uses webhooks)
+      let paymentStatus = "PENDING"
+      let attempts = 0
+      const maxAttempts = 10 // Poll for up to 10 times
+      const pollInterval = 3000 // Every 3 seconds
 
-      // Create subscription
-      const subscription = await supabaseService.createSubscription(user.id, packageId, paymentMethod, paymentReference)
+      while (paymentStatus === "PENDING" && attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, pollInterval))
+        attempts++
 
-      if (!subscription) {
-        // Update payment status to failed
+        const statusResponse = await fetch(`/api/momo/payment-status/${referenceId}`)
+        const statusResult = await statusResponse.json()
+
+        if (statusResponse.ok && statusResult.success) {
+          paymentStatus = statusResult.status
+          dispatch({
+            type: "UPDATE_PAYMENT",
+            payload: { id: payment.id, updates: { status: paymentStatus.toLowerCase() } },
+          })
+        } else {
+          console.warn(`Polling for payment status failed (attempt ${attempts}):`, statusResult.message)
+        }
+      }
+
+      if (paymentStatus === "SUCCESSFUL") {
+        // MoMo status for successful payment
+        // 4. Create subscription and update payment in Supabase
+        const subscription = await supabaseService.createSubscription(user.id, packageId, paymentMethod, referenceId)
+
+        if (!subscription) {
+          // If subscription creation fails, mark payment as failed
+          await supabaseService.updatePaymentStatus(payment.id, "failed")
+          dispatch({ type: "UPDATE_PAYMENT", payload: { id: payment.id, updates: { status: "failed" } } })
+          throw new Error("Failed to create subscription after successful payment.")
+        }
+
+        // Update payment status and link to subscription
+        await supabaseService.updatePaymentStatus(payment.id, "completed")
+        const updatedPayment = await supabaseService.updatePaymentSubscription(payment.id, subscription.id)
+
+        if (!updatedPayment) {
+          // If the payment record wasn't found for update, or update failed, log a warning.
+          // The subscription was created, so we can proceed.
+          console.warn(
+            "Failed to update payment with subscription ID after successful subscription creation. Payment record might be missing or already updated.",
+          )
+        }
+
+        dispatch({
+          type: "UPDATE_PAYMENT",
+          payload: {
+            id: payment.id,
+            updates: {
+              status: "completed",
+              subscription_id: subscription.id,
+              subscription: { package: selectedPackage },
+            },
+          },
+        })
+        dispatch({ type: "SET_SUBSCRIPTION", payload: subscription })
+        dispatch({ type: "SET_ERROR", payload: null }) // Clear any previous errors
+        return true
+      } else {
+        // Payment failed or timed out
         await supabaseService.updatePaymentStatus(payment.id, "failed")
-        updatePayment(payment.id, { status: "failed" })
-        throw new Error("Failed to create subscription")
+        dispatch({ type: "UPDATE_PAYMENT", payload: { id: payment.id, updates: { status: "failed" } } })
+        dispatch({ type: "SET_ERROR", payload: "Payment failed or timed out. Please try again." })
+        return false
       }
-
-      // Update payment with subscription ID and mark as completed
-      await supabaseService.updatePaymentStatus(payment.id, "completed")
-      const updatedPayment = await supabaseService.updatePaymentSubscription(payment.id, subscription.id)
-
-      // Update state with completed payment and new subscription
-      updatePayment(payment.id, {
-        status: "completed",
-        subscription_id: subscription.id,
-        subscription: { package: selectedPackage },
-      })
-      dispatch({ type: "SET_SUBSCRIPTION", payload: subscription })
-
-      return true
     } catch (error) {
       console.error("Payment processing failed:", error)
       dispatch({ type: "SET_ERROR", payload: error instanceof Error ? error.message : "Payment failed" })

@@ -12,6 +12,7 @@ import Link from "next/link"
 import Header from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
 import LoadingButton from "@/components/loading-button"
+import { useAppState } from "@/lib/app-state" // Add this import
 
 const packages = {
   daily: { name: "Daily Package", price: "1,500", duration: "1 day" },
@@ -23,6 +24,7 @@ export default function PaymentContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { toast } = useToast()
+  const { state, actions } = useAppState() // Get actions from AppState
   const [selectedPackage, setSelectedPackage] = useState<string>("")
   const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile")
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -41,22 +43,52 @@ export default function PaymentContent() {
     e.preventDefault()
     setLoading(true)
 
-    // Simulate payment processing
-    try {
-      // Here you would integrate with actual mobile money APIs
-      // For now, we'll simulate a successful payment
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
+    if (!phoneNumber) {
       toast({
-        title: "Payment Successful!",
-        description: `Your ${packages[selectedPackage as keyof typeof packages]?.name} package has been activated.`,
+        title: "Error",
+        description: "Please enter your mobile money number.",
+        variant: "destructive",
       })
+      setLoading(false)
+      return
+    }
 
-      router.push("/dashboard")
+    const pkgInfo = packages[selectedPackage as keyof typeof packages]
+    if (!pkgInfo) {
+      toast({
+        title: "Error",
+        description: "Selected package not found.",
+        variant: "destructive",
+      })
+      setLoading(false)
+      return
+    }
+
+    // Convert price string to number for API call
+    const amount = Number.parseInt(pkgInfo.price.replace(/,/g, ""), 10)
+    const packageId = selectedPackage === "daily" ? 1 : selectedPackage === "weekly" ? 2 : 3 // Map string ID to numeric ID
+
+    try {
+      const success = await actions.processPayment(packageId, paymentMethod, phoneNumber)
+
+      if (success) {
+        toast({
+          title: "Payment Initiated!",
+          description: `Your request for ${pkgInfo.name} is being processed. Please approve the payment on your phone.`,
+        })
+        router.push("/dashboard") // Redirect to dashboard after initiation
+      } else {
+        toast({
+          title: "Payment Failed",
+          description: state.ui.error || "There was an error processing your payment. Please try again.",
+          variant: "destructive",
+        })
+      }
     } catch (error) {
+      console.error("Payment submission error:", error)
       toast({
         title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        description: "An unexpected error occurred during payment. Please try again.",
         variant: "destructive",
       })
     } finally {

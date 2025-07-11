@@ -1,3 +1,6 @@
+import { supabaseService } from "@/lib/supabase-service" // Import the real Supabase service
+import type { SubscriptionType, PaymentType } from "@/lib/supabase-service" // Import types from supabase-service
+
 // Mock subscription service - replace with real API calls
 export interface Subscription {
   id: string
@@ -34,81 +37,29 @@ export interface Payment {
 }
 
 export const subscriptionService = {
-  async getCurrentSubscription(userId: string): Promise<Subscription | null> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Mock data - replace with real API call
-    return {
-      id: "sub_123",
-      package: {
-        name: "Weekly Package",
-        price: 8500,
-        features: ["Unlimited WiFi access", "Valid for 7 days", "24/7 customer support"],
-      },
-      packageName: "Weekly Package",
-      packageType: "weekly",
-      price: 8500,
-      start_date: "2025-01-08T00:00:00Z",
-      end_date: "2025-01-15T00:00:00Z",
-      status: "active",
-      autoRenew: true,
-      payment_method: "mobile_money",
-      payment_reference: "MTN_789456123",
+  async getCurrentSubscription(userId: string): Promise<SubscriptionType | null> {
+    // Fetch real subscription data from Supabase
+    try {
+      const subscription = await supabaseService.getCurrentSubscription(userId)
+      // Map the Supabase data structure to the expected Subscription interface if necessary
+      // For now, assuming the types are compatible.
+      return subscription
+    } catch (error) {
+      console.error("Error fetching current subscription from Supabase:", error)
+      return null
     }
   },
 
-  async getPaymentHistory(userId: string): Promise<Payment[]> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    // Mock data - replace with real API call
-    return [
-      {
-        id: "pay_123",
-        amount: 8500,
-        currency: "UGX",
-        created_at: "2025-01-08T10:30:00Z",
-        status: "completed",
-        method: "mobile_money",
-        description: "Weekly Package",
-        reference: "MTN_789456123",
-        subscription: {
-          package: {
-            name: "Weekly Package",
-          },
-        },
-      },
-      {
-        id: "pay_122",
-        amount: 1500,
-        currency: "UGX",
-        created_at: "2025-01-01T14:20:00Z",
-        status: "completed",
-        method: "mobile_money",
-        description: "Daily Package",
-        reference: "AIRTEL_456789123",
-        subscription: {
-          package: {
-            name: "Daily Package",
-          },
-        },
-      },
-      {
-        id: "pay_121",
-        amount: 1500,
-        currency: "UGX",
-        created_at: "2024-12-30T09:15:00Z",
-        status: "completed",
-        method: "mobile_money",
-        description: "Daily Package",
-        reference: "MTN_123456789",
-        subscription: {
-          package: {
-            name: "Daily Package",
-          },
-        },
-      },
-    ]
+  async getPaymentHistory(userId: string): Promise<PaymentType[]> {
+    // Fetch real payment history from Supabase
+    try {
+      const payments = await supabaseService.getPaymentHistory(userId)
+      // Map the Supabase data structure to the expected Payment interface if necessary
+      // For now, assuming the types are compatible.
+      return payments
+    } catch (error) {
+      console.error("Error fetching payment history from Supabase:", error)
+      return []
+    }
   },
 }
