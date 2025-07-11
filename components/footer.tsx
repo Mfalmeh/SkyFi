@@ -1,62 +1,51 @@
-"use client"
-
-import Link from "next/link"
-import SkyFiLogo from "./skyfi-logo"
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"
+import SkyFiLogo from "@/components/skyfi-logo"
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-t from-orange-500 to-orange-500/80 text-white py-8 md:py-12">
-      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="flex flex-col items-center md:items-start">
-          <Link className="flex items-center gap-2 mb-4" href="#">
-            <SkyFiLogo width={120} height={40} /> {/* Reduced logo size */}
-            <span className="sr-only">SkyFi</span>
-          </Link>
-          <p className="text-center md:text-left max-w-xs">
-            Your reliable partner for fast and affordable student WiFi.
-          </p>
-        </div>
-        <div className="flex flex-col items-center md:items-start">
-          <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-          <nav className="flex flex-col gap-2 text-center md:text-left">
-            <Link className="hover:underline" href="/">
-              Home
-            </Link>
-            <Link className="hover:underline" href="/packages">
-              Packages
-            </Link>
-            <Link className="hover:underline" href="/dashboard">
-              Dashboard
-            </Link>
-            <Link className="hover:underline" href="/payment">
-              Payment
-            </Link>
-          </nav>
-        </div>
-        <div className="flex flex-col items-center md:items-start">
-          <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-          <p className="text-center md:text-left">Email: support@skyfi.com</p>
-          <p className="text-center md:text-left">Phone: +256 771 234 567</p>
-          <p className="text-center md:text-left">Address: Makerere University, Kampala, Uganda</p>
-          <div className="flex gap-4 mt-4">
-            <Link aria-label="Facebook" href="#">
-              <Facebook className="h-6 w-6 hover:text-gray-200" />
-            </Link>
-            <Link aria-label="Twitter" href="#">
-              <Twitter className="h-6 w-6 hover:text-gray-200" />
-            </Link>
-            <Link aria-label="Instagram" href="#">
-              <Instagram className="h-6 w-6 hover:text-gray-200" />
-            </Link>
-            <Link aria-label="LinkedIn" href="#">
-              <Linkedin className="h-6 w-6 hover:text-gray-200" />
-            </Link>
+    <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white mt-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="space-y-6">
+          <div>
+            <SkyFiLogo width={120} height={40} animate={false} /> {/* Reduced logo size */}
+            <p className="text-white/90 max-w-md">
+              Providing affordable and reliable WiFi solutions for students in hostels.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Quick Links</h4>
+            <nav className="space-y-2">
+              <div>
+                <a href="/" className="text-white/90 hover:text-white">
+                  Home
+                </a>
+              </div>
+              <div>
+                <a href="/packages" className="text-white/90 hover:text-white">
+                  Packages
+                </a>
+              </div>
+              <div>
+                <a href="/dashboard" className="text-white/90 hover:text-white">
+                  Dashboard
+                </a>
+              </div>
+            </nav>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Contact Us</h4>
+            <div className="space-y-1 text-white/90">
+              <p>📞 +256 768 916395</p>
+              <p>✉️ support@skyfi.co.ug</p>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-white/20 text-center text-white/90">
+            <p>&copy; 2025 SkyFi. All rights reserved.</p>
+            <p className="mt-1">Made with 🤍 by Churchill</p>
           </div>
         </div>
-      </div>
-      <div className="container mx-auto px-6 mt-8 pt-8 border-t border-white/20 text-center text-sm">
-        <p>&copy; {new Date().getFullYear()} SkyFi. All rights reserved. Made with ❤️ for students.</p>
       </div>
     </footer>
   )

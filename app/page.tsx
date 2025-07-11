@@ -49,7 +49,7 @@ const HomePage = () => {
   const [activeIndex, setActiveIndex] = useState(1) // Start with "Weekly" (index 1) as active
 
   const CARD_WIDTH = 300 // Fixed width of each card
-  const GAP_WIDTH = 32 // Equivalent to Tailwind's space-x-8 (2rem)
+  const GAP_WIDTH = 28 // Equivalent to Tailwind's space-x-8 (2rem)
 
   // Function to scroll to a specific item, only called by pagination dots
   const scrollToItem = useCallback((index: number) => {
@@ -293,13 +293,13 @@ const HomePage = () => {
               </motion.div>
             </div>
           </div>
-          {/* New image at the bottom right of this section */}
-          <div className="absolute bottom-0 right-0 w-40 h-40 overflow-hidden">
+          {/* New image at the bottom left of this section */}
+          <div className="absolute bottom-0 left-0 w-40 h-40 overflow-hidden">
             <Image
               src="/images/man-vr-bottom-left.png"
               alt="Man in VR headset"
               fill
-              style={{ objectFit: "contain", objectPosition: "bottom right" }} // Position at bottom right
+              style={{ objectFit: "contain", objectPosition: "bottom left" }} // Position at bottom left
               sizes="100px" // Small size for optimization
               priority
             />
