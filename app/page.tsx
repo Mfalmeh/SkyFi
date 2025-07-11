@@ -294,7 +294,7 @@ const HomePage = () => {
             </div>
           </div>
           {/* New image at the bottom left of this section */}
-          <div className="absolute bottom-0 left-0 w-40 h-40 overflow-hidden">
+          <div className="absolute bottom-0 right-0 w-40 h-40 overflow-hidden">
             <Image
               src="/images/man-vr-bottom-left.png"
               alt="Man in VR headset"
@@ -398,7 +398,7 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-16 bg-orange-50 dark:bg-gray-800"
+          className="py-60 bg-orange-50 dark:bg-gray-800"
         >
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
