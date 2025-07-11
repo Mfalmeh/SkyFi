@@ -398,9 +398,9 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-60 bg-orange-50 dark:bg-gray-800"
+          className="py-16 bg-orange-50 dark:bg-gray-800"
         >
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <motion.div
                 className="md:w-1/2 flex justify-center"
