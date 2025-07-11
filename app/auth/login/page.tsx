@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +14,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import SkyFiLogo from "@/components/skyfi-logo"
 import LoadingButton from "@/components/loading-button"
+import { supabase } from "@/lib/supabase-client" // Import the client-side instance
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -26,12 +26,12 @@ export default function LoginPage() {
   const { toast } = useToast()
 
   // Check if Supabase is configured
-  const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const isSupabaseConfigured = !!supabase // Check if the client instance exists
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !supabase) {
       toast({
         title: "Configuration Required",
         description: "Supabase environment variables are not configured. Please set up your Supabase project.",
@@ -43,8 +43,6 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const supabase = createClientComponentClient()
-
       // Clear any existing session data first
       if (typeof window !== "undefined") {
         const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.split("//")[1]?.split(".")[0]

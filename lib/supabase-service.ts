@@ -1,4 +1,4 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { supabase } from "@/lib/supabase-client" // Import the client-side instance
 
 export interface UserProfile {
   id: string
@@ -47,11 +47,22 @@ export interface Payment {
 }
 
 class SupabaseService {
-  private supabase = createClientComponentClient()
+  // Use the pre-initialized client from lib/supabase-client.ts
+  private supabaseClient = supabase
+
+  // Add a check for supabaseClient availability
+  private checkSupabaseClient() {
+    if (!this.supabaseClient) {
+      console.error("Supabase client is not initialized. Environment variables might be missing.")
+      throw new Error("Supabase client not available.")
+    }
+    return this.supabaseClient
+  }
 
   async getUserProfile(userId: string): Promise<UserProfile | null> {
     try {
-      const { data, error } = await this.supabase.from("user_profiles").select("*").eq("id", userId).single()
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client.from("user_profiles").select("*").eq("id", userId).single()
 
       if (error) {
         console.error("Error fetching user profile:", error)
@@ -67,10 +78,8 @@ class SupabaseService {
 
   async getPackages(): Promise<Package[]> {
     try {
-      const { data, error } = await this.supabase
-        .from("packages")
-        .select("*")
-        .order("duration_days", { ascending: true })
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client.from("packages").select("*").order("duration_days", { ascending: true })
 
       if (error) {
         console.error("Error fetching packages:", error)
@@ -86,7 +95,8 @@ class SupabaseService {
 
   async getCurrentSubscription(userId: string): Promise<Subscription | null> {
     try {
-      const { data, error } = await this.supabase
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client
         .from("subscriptions")
         .select(`
           *,
@@ -116,7 +126,8 @@ class SupabaseService {
 
   async getUserSubscriptions(userId: string): Promise<Subscription[]> {
     try {
-      const { data, error } = await this.supabase
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client
         .from("subscriptions")
         .select(`
           *,
@@ -139,7 +150,8 @@ class SupabaseService {
 
   async getPaymentHistory(userId: string): Promise<Payment[]> {
     try {
-      const { data, error } = await this.supabase
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client
         .from("payments")
         .select(`
           *,
@@ -169,8 +181,9 @@ class SupabaseService {
     paymentReference: string,
   ): Promise<Subscription | null> {
     try {
+      const client = this.checkSupabaseClient()
       // First get the package to calculate end date
-      const { data: packageData, error: packageError } = await this.supabase
+      const { data: packageData, error: packageError } = await client
         .from("packages")
         .select("*")
         .eq("id", packageId)
@@ -185,7 +198,7 @@ class SupabaseService {
       const endDate = new Date(startDate)
       endDate.setDate(endDate.getDate() + packageData.duration_days)
 
-      const { data, error } = await this.supabase
+      const { data, error } = await client
         .from("subscriptions")
         .insert({
           user_id: userId,
@@ -223,7 +236,8 @@ class SupabaseService {
     status: "completed" | "pending" | "failed" = "pending",
   ): Promise<Payment | null> {
     try {
-      const { data, error } = await this.supabase
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client
         .from("payments")
         .insert({
           user_id: userId,
@@ -251,7 +265,8 @@ class SupabaseService {
 
   async updatePaymentStatus(paymentId: number, status: "completed" | "pending" | "failed"): Promise<boolean> {
     try {
-      const { error } = await this.supabase.from("payments").update({ status }).eq("id", paymentId)
+      const client = this.checkSupabaseClient()
+      const { error } = await client.from("payments").update({ status }).eq("id", paymentId)
 
       if (error) {
         console.error("Error updating payment status:", error)
@@ -267,7 +282,8 @@ class SupabaseService {
 
   async updatePaymentSubscription(paymentId: number, subscriptionId: number): Promise<Payment | null> {
     try {
-      const { data, error } = await this.supabase
+      const client = this.checkSupabaseClient()
+      const { data, error } = await client
         .from("payments")
         .update({ subscription_id: subscriptionId })
         .eq("id", paymentId)
@@ -293,7 +309,8 @@ class SupabaseService {
 
   async updateUserProfile(userId: string, updates: Partial<UserProfile>): Promise<boolean> {
     try {
-      const { error } = await this.supabase
+      const client = this.checkSupabaseClient()
+      const { error } = await client
         .from("user_profiles")
         .update({
           ...updates,
@@ -315,7 +332,8 @@ class SupabaseService {
 
   // Real-time subscription for payments
   subscribeToPayments(userId: string, callback: (payload: any) => void) {
-    return this.supabase
+    const client = this.checkSupabaseClient()
+    return client
       .channel("payments")
       .on(
         "postgres_changes",
@@ -332,7 +350,8 @@ class SupabaseService {
 
   // Real-time subscription for subscriptions
   subscribeToSubscriptions(userId: string, callback: (payload: any) => void) {
-    return this.supabase
+    const client = this.checkSupabaseClient()
+    return client
       .channel("subscriptions")
       .on(
         "postgres_changes",

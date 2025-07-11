@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +14,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import SkyFiLogo from "@/components/skyfi-logo"
 import LoadingButton from "@/components/loading-button"
+import { supabase } from "@/lib/supabase-client" // Import the client-side instance
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
@@ -27,12 +27,12 @@ export default function SignUpPage() {
   const { toast } = useToast()
 
   // Check if Supabase is configured
-  const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const isSupabaseConfigured = !!supabase // Check if the client instance exists
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !supabase) {
       toast({
         title: "Configuration Required",
         description: "Supabase environment variables are not configured. Please set up your Supabase project.",
@@ -53,7 +53,6 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      const supabase = createClientComponentClient()
       const { error } = await supabase.auth.signUp({
         email,
         password,

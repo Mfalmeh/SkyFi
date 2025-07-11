@@ -4,13 +4,14 @@ import { useEffect } from "react"
 import { useAuth } from "@/components/auth-provider"
 import { useAppState } from "@/lib/app-state"
 import { supabaseService } from "@/lib/supabase-service"
+import { supabase } from "@/lib/supabase-client" // Import the client-side instance
 
 export function useRealtimeUpdates() {
   const { user } = useAuth()
   const { actions } = useAppState()
 
   useEffect(() => {
-    if (!user) return
+    if (!user || !supabase) return // Ensure supabase client is available
 
     // Subscribe to payment updates
     const paymentsSubscription = supabaseService.subscribeToPayments(user.id, (payload) => {
@@ -45,5 +46,5 @@ export function useRealtimeUpdates() {
       paymentsSubscription.unsubscribe()
       subscriptionsSubscription.unsubscribe()
     }
-  }, [user, actions])
+  }, [user, actions, supabase]) // Add supabase to dependency array
 }

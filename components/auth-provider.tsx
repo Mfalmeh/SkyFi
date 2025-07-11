@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import type { User } from "@supabase/auth-helpers-nextjs"
+import { supabase } from "@/lib/supabase-client" // Import the client-side instance
 
 interface AuthContextType {
   user: User | null
@@ -29,11 +29,13 @@ export const useAuth = () => {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient()
+  // Use the pre-initialized client from lib/supabase-client.ts
+  // If supabase is null, it means env vars are not configured.
+  const supabaseClient = supabase
 
   useEffect(() => {
     // Check if Supabase is configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (!supabaseClient) {
       setLoading(false)
       return
     }
@@ -44,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const {
           data: { session },
           error,
-        } = await supabase.auth.getSession()
+        } = await supabaseClient.auth.getSession()
         if (error) {
           console.error("Session error:", error)
           setUser(null)
@@ -64,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
       setLoading(false)
 
@@ -77,9 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase.auth])
+  }, [supabaseClient])
 
   const signOut = async () => {
+    if (!supabaseClient) return // Cannot sign out if client is not configured
     try {
       // Clear local storage first
       if (typeof window !== "undefined") {
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.removeItem(`sb-${projectRef}-auth-token`)
         }
       }
-      await supabase.auth.signOut()
+      await supabaseClient.auth.signOut()
     } catch (error) {
       console.error("Sign out error:", error)
     }

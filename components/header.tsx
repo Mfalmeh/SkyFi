@@ -5,12 +5,12 @@ import { Moon, Sun, Menu, LogOut, Home } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useState } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import SkyFiLogo from "@/components/skyfi-logo"
 import { motion } from "framer-motion"
+import { supabase } from "@/lib/supabase-client" // Import the client-side instance
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
@@ -18,16 +18,15 @@ export default function Header() {
   const router = useRouter()
 
   // Check if Supabase is configured
-  const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const isSupabaseConfigured = !!supabase
 
   const handleSignOut = async () => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !supabase) {
       router.push("/")
       return
     }
 
     try {
-      const supabase = createClientComponentClient()
       // Clear local storage first to prevent refresh token issues
       if (typeof window !== "undefined") {
         const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.split("//")[1]?.split(".")[0]
