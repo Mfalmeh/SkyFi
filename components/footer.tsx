@@ -3,8 +3,6 @@ import SkyFiLogo from "@/components/skyfi-logo"
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white mt-auto">
-      {" "}
-      {/* Added subtle gradient */}
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-6">
           <div>
@@ -19,8 +17,6 @@ export default function Footer() {
             <nav className="space-y-2">
               <div>
                 <a href="/" className="text-white/90 hover:text-white">
-                  {" "}
-                  {/* Changed to "/" */}
                   Home
                 </a>
               </div>
@@ -40,13 +36,14 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-3">Contact Us</h4>
             <div className="space-y-1 text-white/90">
-              <p>📞 +256 700 000000</p>
-              <p>✉️ support@skyfi.com</p>
+              <p>📞 +256 768 916395</p>
+              <p>✉️ support@skyfi.co.ug</p>
             </div>
           </div>
 
           <div className="pt-4 border-t border-white/20 text-center text-white/90">
             <p>&copy; 2025 SkyFi. All rights reserved.</p>
+            <p className="mt-1">Made with 🤍 by Churchill</p> {/* Updated heart emoji */}
           </div>
         </div>
       </div>

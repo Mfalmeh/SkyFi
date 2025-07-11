@@ -4,7 +4,8 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { AppStateProvider } from "@/lib/app-state"
-import { Toaster } from "@/components/ui/toaster"
+import { ToasterProvider } from "@/hooks/use-toast" // Import the custom ToasterProvider from your hook
+import { Toaster } from "@/components/toaster" // Import the new Toaster component
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,8 +32,12 @@ export default function RootLayout({
         >
           <AuthProvider>
             <AppStateProvider>
-              {children}
-              <Toaster />
+              <ToasterProvider>
+                {" "}
+                {/* Wrap the entire application with your custom ToasterProvider */}
+                {children}
+                <Toaster /> {/* Render the Toaster component here */}
+              </ToasterProvider>
             </AppStateProvider>
           </AuthProvider>
         </ThemeProvider>

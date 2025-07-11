@@ -56,6 +56,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
     // Simulate contacting support
     await new Promise((resolve) => setTimeout(resolve, 2000))
     setContactingSupport(false)
+    // The actual link will be handled by the Link component's href
   }
 
   return (
@@ -146,22 +147,29 @@ export default function DashboardContent({ user }: DashboardContentProps) {
                   <p className="text-sm font-medium">Contact us:</p>
                   <div className="flex items-center space-x-2 text-sm">
                     <Phone className="w-4 h-4" />
-                    <span>+256 700 000000</span>
+                    <span>+256 768 916395</span> {/* Updated phone number */}
                   </div>
                   <div className="flex items-center space-x-2 text-sm">
                     <Mail className="w-4 h-4" />
-                    <span>support@skyfi.com</span>
+                    <span>support@skyfi.co.ug</span> {/* Updated email */}
                   </div>
                 </div>
 
-                <LoadingButton
-                  className="w-full bg-orange-500 hover:bg-orange-600"
-                  loading={contactingSupport}
-                  loadingText="Connecting to support..."
-                  onClick={handleContactSupport}
+                <Link
+                  href="https://wa.me/256768916395?text=Hi,%20I%20have%20an%20inquiry%20about%20the%20SkyFi%20packages!"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
                 >
-                  Contact Support
-                </LoadingButton>
+                  <LoadingButton
+                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    loading={contactingSupport}
+                    loadingText="Connecting to support..."
+                    onClick={handleContactSupport} // Still call this for loading state
+                  >
+                    Contact Support
+                  </LoadingButton>
+                </Link>
               </CardContent>
             </Card>
           </motion.div>

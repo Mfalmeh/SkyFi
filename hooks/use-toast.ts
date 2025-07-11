@@ -5,7 +5,7 @@ import * as React from "react"
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 5000 // Changed to 5 seconds
 
 type ToasterToast = ToastProps & {
   id: string
@@ -86,9 +86,12 @@ const reducer = (state: State, action: Action): State => {
   }
 }
 
-const ToasterContext = React.createContext<{ toast: (props: ToasterToast) => { id: string } } | undefined>(undefined)
+const ToasterContext = React.createContext<
+  { toast: (props: ToasterToast) => { id: string }; toasts: ToasterToast[] } | undefined
+>(undefined)
 
-function ToasterProvider({ children }: { children: React.ReactNode }) {
+// Export the ToasterProvider
+export function ToasterProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = React.useReducer(reducer, { toasts: [] })
 
   const hotToast = React.useCallback(
@@ -132,7 +135,9 @@ function ToasterProvider({ children }: { children: React.ReactNode }) {
   }, [state.toasts])
 
   return (
-    <ToasterContext.Provider value={React.useMemo(() => ({ toast: hotToast }), [hotToast])}>
+    <ToasterContext.Provider
+      value={React.useMemo(() => ({ toast: hotToast, toasts: state.toasts }), [hotToast, state.toasts])}
+    >
       {children}
     </ToasterContext.Provider>
   )
