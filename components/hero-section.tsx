@@ -136,7 +136,7 @@ export default function HeroSection() {
               transition={{ duration: 1, delay: 0.5 }}
             >
               <Image
-                src="/hero-woman.jpg"
+                src="/background3.png" // Using the new image
                 alt="Woman with phone"
                 width={400}
                 height={600}

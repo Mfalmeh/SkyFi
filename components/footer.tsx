@@ -16,7 +16,9 @@ export default function Footer() {
             <h4 className="font-semibold mb-3">Quick Links</h4>
             <nav className="space-y-2">
               <div>
-                <a href="/dashboard" className="text-white/90 hover:text-white">
+                <a href="/" className="text-white/90 hover:text-white">
+                  {" "}
+                  {/* Changed to "/" */}
                   Home
                 </a>
               </div>
