@@ -44,7 +44,8 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-orange-500 dark:bg-orange-600 text-white">
+    <header className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+      {/* Added subtle gradient */}
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link href="/">

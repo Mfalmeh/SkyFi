@@ -2,7 +2,9 @@ import SkyFiLogo from "@/components/skyfi-logo"
 
 export default function Footer() {
   return (
-    <footer className="bg-orange-500 dark:bg-orange-600 text-white mt-auto">
+    <footer className="bg-gradient-to-r from-orange-500 to-orange-600 text-white mt-auto">
+      {" "}
+      {/* Added subtle gradient */}
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-6">
           <div>

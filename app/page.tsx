@@ -62,24 +62,31 @@ const HomePage = () => {
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-12">Why Choose SkyFi?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-sm">
-                <Wifi className="h-12 w-12 text-orange-500 mb-4" /> {/* Adjusted text-primary to text-orange-500 */}
+              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
+                {" "}
+                {/* Added border and shadow-md */}
+                <Wifi className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Fast Connection</h3>
                 <p className="text-muted-foreground">Enjoy high-speed internet for streaming, gaming, and studying.</p>
               </div>
-              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-sm">
-                <Shield className="h-12 w-12 text-orange-500 mb-4" /> {/* Adjusted text-primary to text-orange-500 */}
+              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
+                {" "}
+                {/* Added border and shadow-md */}
+                <Shield className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Secure Network</h3>
                 <p className="text-muted-foreground">Our network is protected with the latest security protocols.</p>
               </div>
-              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-sm">
-                <Clock className="h-12 w-12 text-orange-500 mb-4" /> {/* Adjusted text-primary to text-orange-500 */}
+              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
+                {" "}
+                {/* Added border and shadow-md */}
+                <Clock className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">24/7 Access</h3>
                 <p className="text-muted-foreground">Connect anytime with our always-on WiFi service.</p>
               </div>
-              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-sm">
-                <CreditCard className="h-12 w-12 text-orange-500 mb-4" />{" "}
-                {/* Adjusted text-primary to text-orange-500 */}
+              <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card shadow-md border border-border">
+                {" "}
+                {/* Added border and shadow-md */}
+                <CreditCard className="h-12 w-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Flexible Packages</h3>
                 <p className="text-muted-foreground">
                   Choose from daily, weekly, or monthly packages to fit your needs.
@@ -148,70 +155,74 @@ const HomePage = () => {
             <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
               Choose the package that works best for you with no hidden fees or contracts.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
-                <h3 className="text-xl font-bold mb-2">Daily</h3>
-                <p className="text-3xl font-bold mb-4">
-                  1,500 <span className="text-base font-normal text-muted-foreground">UGX</span>
-                </p>
-                <p className="text-muted-foreground mb-6">Perfect for short-term needs</p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    Unlimited data
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    24 hours access
-                  </li>
-                </ul>
+            {/* Carousel Container */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory space-x-8 pb-4 max-w-5xl mx-auto scrollbar-hide">
+              <div className="flex-shrink-0 w-full md:w-1/3 snap-center">
+                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <h3 className="text-xl font-bold mb-2">Daily</h3>
+                  <p className="text-3xl font-bold mb-4">
+                    1,500 <span className="text-base font-normal text-muted-foreground">UGX</span>
+                  </p>
+                  <p className="text-muted-foreground mb-6">Perfect for short-term needs</p>
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      Unlimited data
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      24 hours access
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div className="bg-card p-6 rounded-lg shadow-sm border-2 border-orange-500 relative">
-                {" "}
-                {/* Adjusted border-primary to border-orange-500 */}
-                <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                  POPULAR
-                </div>{" "}
-                {/* Adjusted bg-primary to bg-orange-500 and text-primary-foreground to text-white */}
-                <h3 className="text-xl font-bold mb-2">Weekly</h3>
-                <p className="text-3xl font-bold mb-4">
-                  8,500 <span className="text-base font-normal text-muted-foreground">UGX</span>
-                </p>
-                <p className="text-muted-foreground mb-6">Great value for regular users</p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    Unlimited data
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />7 days access
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    Save 20% vs daily
-                  </li>
-                </ul>
+              <div className="flex-shrink-0 w-full md:w-1/3 snap-center">
+                <div className="bg-card p-6 rounded-lg shadow-sm border-2 border-orange-500 relative">
+                  <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                    POPULAR
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Weekly</h3>
+                  <p className="text-3xl font-bold mb-4">
+                    8,500 <span className="text-base font-normal text-muted-foreground">UGX</span>
+                  </p>
+                  <p className="text-muted-foreground mb-6">Great value for regular users</p>
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      Unlimited data
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />7 days access
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      Save 20% vs daily
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
-                <h3 className="text-xl font-bold mb-2">Monthly</h3>
-                <p className="text-3xl font-bold mb-4">
-                  35,000 <span className="text-base font-normal text-muted-foreground">UGX</span>
-                </p>
-                <p className="text-muted-foreground mb-6">Best value for long-term</p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    Unlimited data
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    30 days access
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="w-4 h-4 mr-2 text-green-500" />
-                    Save 30% vs daily
-                  </li>
-                </ul>
+              <div className="flex-shrink-0 w-full md:w-1/3 snap-center">
+                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <h3 className="text-xl font-bold mb-2">Monthly</h3>
+                  <p className="text-3xl font-bold mb-4">
+                    35,000 <span className="text-base font-normal text-muted-foreground">UGX</span>
+                  </p>
+                  <p className="text-muted-foreground mb-6">Best value for long-term</p>
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      Unlimited data
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      30 days access
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="w-4 h-4 mr-2 text-green-500" />
+                      Save 30% vs daily
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
             <div className="text-center mt-10">
@@ -220,10 +231,73 @@ const HomePage = () => {
                 onClick={() => router.push(user ? "/packages" : "/auth/signup")}
                 className="bg-orange-500 hover:bg-orange-600 text-white"
               >
-                {" "}
-                {/* Adjusted button styling */}
                 {user ? "View All Packages" : "Get Started"}
               </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Streaming Section with Image */}
+        <section className="py-16 bg-orange-50 dark:bg-gray-800">
+          {" "}
+          {/* Changed to match Gaming/VR section */}
+          <div className="container mx-auto px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <motion.div
+                className="md:w-1/2 flex justify-center"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <img src="/images/student-streaming.png" alt="Student Streaming" className="max-h-96 object-contain" />
+              </motion.div>
+
+              <motion.div
+                className="md:w-1/2"
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-3xl font-bold mb-4 text-orange-800 dark:text-orange-300">
+                  {" "}
+                  {/* Changed to orange */}
+                  Stream Without Limits
+                </h2>
+                <p className="text-lg mb-6 text-orange-700 dark:text-orange-400">
+                  {" "}
+                  {/* Changed to orange */}
+                  Whether you're studying with music, watching lectures online, or catching up on your favorite shows,
+                  SkyFi delivers reliable speed when you need it most.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <span className="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center text-white mr-3">
+                      {" "}
+                      {/* Changed to orange */}✓
+                    </span>
+                    <span className="text-orange-700 dark:text-orange-400">High-quality music streaming</span>{" "}
+                    {/* Changed to orange */}
+                  </li>
+                  <li className="flex items-center">
+                    <span className="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center text-white mr-3">
+                      {" "}
+                      {/* Changed to orange */}✓
+                    </span>
+                    <span className="text-orange-700 dark:text-orange-400">Video calls without freezing</span>{" "}
+                    {/* Changed to orange */}
+                  </li>
+                  <li className="flex items-center">
+                    <span className="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center text-white mr-3">
+                      {" "}
+                      {/* Changed to orange */}✓
+                    </span>
+                    <span className="text-orange-700 dark:text-orange-400">Download lecture materials quickly</span>{" "}
+                    {/* Changed to orange */}
+                  </li>
+                </ul>
+              </motion.div>
             </div>
           </div>
         </section>

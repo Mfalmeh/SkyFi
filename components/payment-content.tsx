@@ -47,7 +47,7 @@ export default function PaymentContent() {
       toast({
         title: "Error",
         description: "Please enter your mobile money number.",
-        variant: "destructive",
+        variant: "destructive", // Red for error
       })
       setLoading(false)
       return
@@ -58,7 +58,7 @@ export default function PaymentContent() {
       toast({
         title: "Error",
         description: "Selected package not found.",
-        variant: "destructive",
+        variant: "destructive", // Red for error
       })
       setLoading(false)
       return
@@ -75,13 +75,14 @@ export default function PaymentContent() {
         toast({
           title: "Payment Initiated!",
           description: `Your request for ${pkgInfo.name} is being processed. Please approve the payment on your phone.`,
+          variant: "info", // Blue for info/initiated
         })
         router.push("/dashboard") // Redirect to dashboard after initiation
       } else {
         toast({
           title: "Payment Failed",
           description: state.ui.error || "There was an error processing your payment. Please try again.",
-          variant: "destructive",
+          variant: "destructive", // Red for error
         })
       }
     } catch (error) {
@@ -89,7 +90,7 @@ export default function PaymentContent() {
       toast({
         title: "Payment Failed",
         description: "An unexpected error occurred during payment. Please try again.",
-        variant: "destructive",
+        variant: "destructive", // Red for error
       })
     } finally {
       setLoading(false)

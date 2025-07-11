@@ -1,22 +1,21 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Eye, EyeOff, AlertCircle } from "lucide-react"
-import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import Link from "next/link"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { LoadingButton } from "@/components/ui/loading-button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import SkyFiLogo from "@/components/skyfi-logo"
-import LoadingButton from "@/components/loading-button"
-import { supabase } from "@/lib/supabase-client" // Import the client-side instance
+import { ArrowLeft, Eye, EyeOff, SkyFiLogo, AlertCircle } from "@/components/icons"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
-export default function SignUpPage() {
+const supabase = createClientComponentClient()
+
+const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -45,7 +44,7 @@ export default function SignUpPage() {
       toast({
         title: "Error",
         description: "Passwords do not match",
-        variant: "destructive",
+        variant: "destructive", // Red for error
       })
       return
     }
@@ -67,12 +66,13 @@ export default function SignUpPage() {
         toast({
           title: "Error",
           description: error.message,
-          variant: "destructive",
+          variant: "destructive", // Red for error
         })
       } else {
         toast({
           title: "Success",
           description: "Account created successfully! Please check your email to verify your account.",
+          variant: "success", // Green for success
         })
         router.push("/auth/login")
       }
@@ -80,7 +80,7 @@ export default function SignUpPage() {
       toast({
         title: "Error",
         description: "An unexpected error occurred",
-        variant: "destructive",
+        variant: "destructive", // Red for error
       })
     } finally {
       setLoading(false)
@@ -118,7 +118,9 @@ export default function SignUpPage() {
 
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
                 <Input
                   id="fullName"
                   type="text"
@@ -130,7 +132,9 @@ export default function SignUpPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
                 <Input
                   id="email"
                   type="email"
@@ -142,7 +146,9 @@ export default function SignUpPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -165,7 +171,9 @@ export default function SignUpPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                  Confirm Password
+                </label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -199,3 +207,5 @@ export default function SignUpPage() {
     </div>
   )
 }
+
+export default SignUpPage

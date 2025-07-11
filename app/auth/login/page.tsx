@@ -60,12 +60,13 @@ export default function LoginPage() {
         toast({
           title: "Error",
           description: error.message,
-          variant: "destructive",
+          variant: "destructive", // Red for error
         })
       } else {
         toast({
           title: "Success",
           description: "Logged in successfully!",
+          variant: "success", // Green for success
         })
 
         // Redirect to the originally requested page or dashboard
@@ -79,7 +80,7 @@ export default function LoginPage() {
       toast({
         title: "Error",
         description: "An unexpected error occurred",
-        variant: "destructive",
+        variant: "destructive", // Red for error
       })
     } finally {
       setLoading(false)
