@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import PaymentContent from "@/components/payment-content"
-import { getSafeSession } from "@/lib/supabase"
+import { getSafeSessionServer } from "@/lib/supabase-server" // Corrected import path and function name
 
 export default async function PaymentPage() {
   // Check if Supabase is configured
@@ -9,7 +9,7 @@ export default async function PaymentPage() {
   }
 
   try {
-    const session = await getSafeSession()
+    const session = await getSafeSessionServer() // Use the server-side session helper
 
     if (!session) {
       redirect("/auth/login?redirect=/payment")
