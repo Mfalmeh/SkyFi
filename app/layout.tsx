@@ -7,6 +7,20 @@ import { AppStateProvider } from "@/lib/app-state"
 import { ToasterProvider } from "@/hooks/use-toast" // Import the custom ToasterProvider from your hook
 import { Toaster } from "@/components/toaster" // Import the new Toaster component
 
+import * as Sentry from '@sentry/nextjs';
+  import type ( Metadata } from 'next';
+
+// Add or edit your "generateMetadata" to include the Sentry trace data: 
+export function generateMetadata(): Metadata {
+  return {
+   // ... your existing metadata 
+     other: { 
+       ...Sentry.getTraceData()
+     }
+  };
+} 
+      
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
