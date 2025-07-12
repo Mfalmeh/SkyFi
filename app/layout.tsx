@@ -7,6 +7,9 @@ import { AppStateProvider } from "@/lib/app-state"
 import { ToasterProvider } from "@/hooks/use-toast" // Import the custom ToasterProvider from your hook
 import { Toaster } from "@/components/toaster" // Import the new Toaster component
 
+
+
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
