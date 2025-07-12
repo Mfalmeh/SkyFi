@@ -125,8 +125,6 @@ export function ToasterProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     state.toasts.forEach((toast) => {
       if (toast.open === false) {
-        // We need to remove toast from state after it's dismissed
-        // otherwise it will remain in the DOM for animation purposes
         setTimeout(() => {
           dispatch({ type: actionTypes.REMOVE_TOAST, toastId: toast.id })
         }, TOAST_REMOVE_DELAY)
@@ -134,13 +132,9 @@ export function ToasterProvider({ children }: { children: React.ReactNode }) {
     })
   }, [state.toasts])
 
-  return (
-    <ToasterContext.Provider
-      value={React.useMemo(() => ({ toast: hotToast, toasts: state.toasts }), [hotToast, state.toasts])}
-    >
-      {children}
-    </ToasterContext.Provider>
-  )
+  const contextValue = React.useMemo(() => ({ toast: hotToast, toasts: state.toasts }), [hotToast, state.toasts])
+  
+  return React.createElement(ToasterContext.Provider, { value: contextValue }, children)
 }
 
 export function useToast() {

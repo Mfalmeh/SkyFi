@@ -35,9 +35,10 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
-          enableSystem
+          enableSystem={true}
           disableTransitionOnChange={false}
-          storageKey="skyfi-theme"
+          storageKey="skyfi-theme-preference"
+          themes={["light", "dark", "system"]}
         >
           <AuthProvider>
             <AppStateProvider>

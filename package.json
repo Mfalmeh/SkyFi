@@ -44,6 +44,7 @@
     "clsx": "^2.1.1",
     "cmdk": "latest",
     "crypto": "latest",
+    "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "latest",
     "framer-motion": "latest",
     "input-otp": "latest",

@@ -3,12 +3,14 @@
 import { useRouter } from "next/navigation"
 import Image from "next/image" // Import the Image component
 import { Button } from "@/components/ui/button"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Wifi, Shield, Clock, CreditCard, Check } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 import { motion } from "framer-motion"
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState } from "react"
+import Autoplay from "embla-carousel-autoplay"
 
 // Define packages data locally for the carousel - now only 3 packages
 const carouselPackages = [
@@ -44,95 +46,18 @@ const carouselPackages = [
 const HomePage = () => {
   const router = useRouter()
   const { user } = useAuth()
-
-  const carouselRef = useRef<HTMLDivElement>(null)
-  const [activeIndex, setActiveIndex] = useState(1) // Start with "Weekly" (index 1) as active
-
-  const CARD_WIDTH = 300 // Fixed width of each card
-  const GAP_WIDTH = 28 // Equivalent to Tailwind's space-x-8 (2rem)
-
-  // Function to scroll to a specific item, only called by pagination dots
-  const scrollToItem = useCallback((index: number) => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollTo({
-        left: index * (CARD_WIDTH + GAP_WIDTH),
-        behavior: "smooth",
-      })
-      setActiveIndex(index)
-    }
-  }, []) // No dependencies, as CARD_WIDTH and GAP_WIDTH are constants
-
-  // Function to update activeIndex based on scroll position
-  const handleScroll = useCallback(() => {
-    if (carouselRef.current) {
-      const scrollLeft = carouselRef.current.scrollLeft
-      const newIndex = Math.round(scrollLeft / (CARD_WIDTH + GAP_WIDTH))
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex)
-      }
-    }
-  }, [activeIndex]) // Only re-create if activeIndex changes
-
-  useEffect(() => {
-    const carouselElement = carouselRef.current
-    if (carouselElement) {
-      carouselElement.addEventListener("scroll", handleScroll)
-      // Initial scroll to center the active item
-      // Use a timeout to ensure layout is stable before initial scroll
-      const initialScrollTimeout = setTimeout(() => {
-        scrollToItem(activeIndex)
-      }, 100) // Small delay
-
-      return () => {
-        carouselElement.removeEventListener("scroll", handleScroll)
-        clearTimeout(initialScrollTimeout)
-      }
-    }
-  }, [handleScroll, scrollToItem, activeIndex]) // Dependencies for useEffect
-
-  // Function to determine card style based on its position relative to activeIndex
-  const getCardStyle = (index: number) => {
-    const distance = Math.abs(index - activeIndex)
-    let opacity = 1
-    let scale = 1
-    let zIndex = 1
-
-    if (distance === 0) {
-      // Active card
-      opacity = 1
-      scale = 1.15 // Increased zoom effect
-      zIndex = 2
-    } else if (distance === 1) {
-      // Adjacent cards
-      opacity = 0.7
-      scale = 0.9
-      zIndex = 1
-    } else {
-      // Farther cards
-      opacity = 0.4
-      scale = 0.8
-      zIndex = 0
-    }
-
-    return {
-      opacity,
-      transform: `scale(${scale})`,
-      zIndex,
-      transition: "all 0.5s ease-in-out", // Increased transition duration
-      filter: distance > 0 ? "grayscale(50%)" : "none", // Add grayscale for non-active
-    }
-  }
+  const [api, setApi] = useState<CarouselApi>()
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Header />
-      <main className="flex-grow">
+      <main className="flex-grow overflow-x-hidden">
         {/* Hero Section */}
         <motion.section
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-gradient-to-b from-orange-500 to-orange-500/80 text-white py-16 md:py-24"
+          className="bg-gradient-to-b from-orange-500 to-orange-500/80 text-white py-16 md:py-24 overflow-x-hidden"
         >
           <div className="container mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Fast & Affordable WiFi for Students</h1>
@@ -182,7 +107,7 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-16 bg-background"
+          className="py-16 bg-background overflow-x-hidden"
         >
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-12">Why Choose SkyFi?</h2>
@@ -243,7 +168,7 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-16 bg-orange-50 dark:bg-gray-800 relative" // Added relative for absolute positioning of new image
+          className="py-16 bg-orange-50 dark:bg-gray-800 relative overflow-x-hidden" // Added relative for absolute positioning of new image
         >
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -312,72 +237,70 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-16 bg-muted/50"
+          className="py-16 bg-muted/50 overflow-x-hidden"
         >
           <div className="container mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-4">Simple, Affordable Pricing</h2>
             <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
               Choose the package that works best for you with no hidden fees or contracts.
             </p>
-            <div className="relative flex items-center justify-center">
-              {/* Carousel Container - Fixed width to show 3 cards, scrollable */}
-              <div
-                ref={carouselRef}
-                // This width ensures 3 cards are visible (3*300px + 2*32px gaps = 964px)
-                // and allows horizontal scrolling if there are more than 3 cards.
-                className="w-[964px] overflow-x-scroll snap-x snap-mandatory scrollbar-hide"
+            
+            {/* New Carousel Implementation */}
+            <div className="relative max-w-5xl mx-auto">
+              <Carousel
+                setApi={setApi}
+                className="w-full"
+                opts={{
+                  align: "center",
+                  loop: true,
+                  startIndex: 1, // Start with the "Popular" weekly package
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 5000,
+                    stopOnInteraction: true,
+                  })
+                ]}
               >
-                <div className="flex space-x-8">
+                <CarouselContent className="-ml-2 md:-ml-4">
                   {carouselPackages.map((pkg, index) => (
-                    <motion.div
-                      key={pkg.id}
-                      className="flex-shrink-0 w-[300px] h-[400px] flex flex-col snap-center" // Fixed width and portrait height, snap-center
-                      style={getCardStyle(index)}
-                      whileHover={{ scale: index === activeIndex ? 1.17 : 0.92 }} // Slight hover effect, adjusted for new active scale
-                      whileTap={{ scale: index === activeIndex ? 1.13 : 0.88 }} // Slight tap effect, adjusted for new active scale
-                      onClick={() => scrollToItem(index)} // Allow clicking cards to make them active
-                    >
-                      <div
-                        className={`bg-card p-6 rounded-lg shadow-sm border flex-grow ${pkg.popular ? "border-2 border-orange-500" : "border-border"} relative`}
+                    <CarouselItem key={pkg.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                      <motion.div
+                        className="p-1"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        {pkg.popular && (
-                          <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-                            POPULAR
-                          </div>
-                        )}
-                        <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
-                        <p className="text-3xl font-bold mb-4">
-                          {pkg.price} <span className="text-base font-normal text-muted-foreground">UGX</span>
-                        </p>
-                        <p className="text-muted-foreground mb-6">{pkg.description}</p>
-                        <ul className="space-y-2 mb-6">
-                          {pkg.features.map((feature, featureIndex) => (
-                            <li key={featureIndex} className="flex items-center">
-                              <Check className="w-4 h-4 mr-2 text-green-500" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </motion.div>
+                        <div
+                          className={`bg-card p-6 rounded-lg shadow-lg border h-[400px] flex flex-col ${
+                            pkg.popular ? "border-2 border-orange-500 shadow-orange-500/25" : "border-border"
+                          } relative`}
+                        >
+                          {pkg.popular && (
+                            <div className="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                              POPULAR
+                            </div>
+                          )}
+                          <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
+                          <p className="text-3xl font-bold mb-4">
+                            {pkg.price} <span className="text-base font-normal text-muted-foreground">UGX</span>
+                          </p>
+                          <p className="text-muted-foreground mb-6">{pkg.description}</p>
+                          <ul className="space-y-2 mb-6 flex-grow">
+                            {pkg.features.map((feature, featureIndex) => (
+                              <li key={featureIndex} className="flex items-center">
+                                <Check className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                                <span className="text-sm">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </motion.div>
+                    </CarouselItem>
                   ))}
-                </div>
-              </div>
-              {/* Navigation Buttons (removed as per request) */}
-            </div>
-
-            {/* Pagination Dots */}
-            <div className="flex justify-center mt-8 space-x-2">
-              {carouselPackages.map((_, index) => (
-                <button
-                  key={index}
-                  className={`h-2 w-2 rounded-full transition-colors ${
-                    index === activeIndex ? "bg-orange-500" : "bg-gray-300 hover:bg-gray-400"
-                  }`}
-                  onClick={() => scrollToItem(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex" />
+                <CarouselNext className="hidden md:flex" />
+              </Carousel>
             </div>
 
             <div className="text-center mt-10">
@@ -398,9 +321,9 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          className="py-16 bg-orange-50 dark:bg-gray-800"
+          className="py-16 bg-orange-50 dark:bg-gray-800 overflow-x-hidden"
         >
-          <div className="container mx-auto">
+          <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <motion.div
                 className="md:w-1/2 flex justify-center"
